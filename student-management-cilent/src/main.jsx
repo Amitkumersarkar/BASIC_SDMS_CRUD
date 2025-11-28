@@ -35,7 +35,6 @@ const router = createBrowserRouter([
       {
         path: 'student/:id',
         Component: StudentDetails,
-        loader: () => fetch('')
       }
     ]
   },
