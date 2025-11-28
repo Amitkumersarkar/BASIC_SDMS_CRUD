@@ -25,8 +25,9 @@ const router = createBrowserRouter([
         Component: AddStudent
       },
       {
-        path: 'update',
-        Component: UpdateStudent
+        path: 'updateStudent/:id',
+        Component: UpdateStudent,
+        loader: ({ params }) => fetch(`http://localhost:4500/students/${params.id}`)
       },
       {
         path: 'studentCard',

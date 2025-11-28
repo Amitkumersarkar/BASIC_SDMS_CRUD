@@ -59,7 +59,7 @@ const StudentCard = ({ student }) => {
                         <button className="btn btn-info btn-sm">View</button>
                     </Link>
 
-                    <Link to='/update'>
+                    <Link to={`/updateStudent/${_id}`}>
                         <button className="btn btn-warning btn-sm">Update</button>
                     </Link>
                     <button onClick={() => handleDelete(_id)} className="btn btn-error btn-sm">Delete</button>
