@@ -35,7 +35,7 @@ async function run() {
             res.send(result);
         })
 
-        // get apis
+        // get/read apis ( read all )
         app.get('/students', async (req, res) => {
             const query = studentCollection.find();
             const result = await query.toArray();
@@ -51,11 +51,25 @@ async function run() {
             res.send(result)
         })
 
-        // view specific one data
+        //read/get apis  (view specific one data)
         app.get('/students/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await studentCollection.findOne(query)
+            res.send(result)
+        })
+
+        // update apis (put/patch)
+
+        app.put('/students/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const updatedStudent = req.body;
+            const updatedDoc = {
+                $set: updatedStudent
+
+            }
+            const result = await studentCollection.updateOne(query, updatedDoc)
             res.send(result)
         })
 
