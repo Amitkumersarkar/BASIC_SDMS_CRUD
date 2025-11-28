@@ -1,4 +1,5 @@
 import { useLoaderData } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const UpdateStudent = () => {
     //this destructuring data set as a default value in the form
@@ -16,11 +17,24 @@ const UpdateStudent = () => {
         const UpdateForm = { name, id, email, photo };
         console.log(UpdateForm);
 
-        // backend update apis
-        fetch('')
+        //send updated info to the backend 
+        fetch(`http://localhost:4500/students/${_id}`, {
+            method: "PUT",
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(UpdateForm)
+        })
             .then(res => res.json())
             .then(data => {
-                console.log(data)
+                if (data.modifiedCount) {
+                    Swal.fire({
+                        title: "Updated Successfully",
+                        icon: "success",
+                        draggable: true
+                    });
+                }
+
             })
 
     }

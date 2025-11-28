@@ -1,11 +1,10 @@
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 
-const StudentCard = ({ student }) => {
+const StudentCard = ({ student, std, setStd }) => {
     const { _id, name, photo, id, email } = student;
 
     const handleDelete = (_id) => {
-        console.log(_id);
         Swal.fire({
             title: "Are you sure?",
             text: "You won't be able to revert this!",
@@ -15,28 +14,37 @@ const StudentCard = ({ student }) => {
             cancelButtonColor: "#d33",
             confirmButtonText: "Yes, delete it!"
         }).then((result) => {
-            console.log(result.isConfirmed);
             if (result.isConfirmed) {
 
-                // delete apis
                 fetch(`http://localhost:4500/students/${_id}`, {
                     method: "DELETE"
                 })
                     .then(res => res.json())
                     .then(data => {
-                        console.log(data);
-                        if (data.deletedCount) {
+
+                        if (data.deletedCount > 0) {
                             Swal.fire({
                                 title: "Deleted!",
-                                text: "Your file has been deleted.",
+                                text: "Student removed successfully.",
                                 icon: "success"
                             });
-                        }
 
+                            // remove from UI
+                            const remainingStudents = std.filter(stu => stu._id !== _id);
+                            setStd(remainingStudents);
+                        }
                     })
+                    .catch(err => {
+                        console.error(err);
+                        Swal.fire({
+                            title: "Error!",
+                            text: "Failed to delete student.",
+                            icon: "error"
+                        });
+                    });
             }
         });
-    }
+    };
 
     return (
         <div className="w-full max-w-2xl mx-auto bg-base-200 border border-base-300 shadow-lg rounded-xl p-5 flex gap-6 items-center">
@@ -51,8 +59,12 @@ const StudentCard = ({ student }) => {
 
             <div className="flex-1">
                 <h2 className="text-xl font-bold">{name}</h2>
-                <p className="mt-1"><span className="font-semibold">ID:</span> {id}</p>
-                <p className="mt-1"><span className="font-semibold">Email:</span> {email}</p>
+                <p className="mt-1">
+                    <span className="font-semibold">ID:</span> {id}
+                </p>
+                <p className="mt-1">
+                    <span className="font-semibold">Email:</span> {email}
+                </p>
 
                 <div className="mt-4 flex gap-3">
                     <Link to={`/student/${_id}`}>
@@ -62,7 +74,13 @@ const StudentCard = ({ student }) => {
                     <Link to={`/updateStudent/${_id}`}>
                         <button className="btn btn-warning btn-sm">Update</button>
                     </Link>
-                    <button onClick={() => handleDelete(_id)} className="btn btn-error btn-sm">Delete</button>
+
+                    <button
+                        onClick={() => handleDelete(_id)}
+                        className="btn btn-error btn-sm"
+                    >
+                        Delete
+                    </button>
                 </div>
             </div>
         </div>
