@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Simple Dino Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+
+        canvas {
+            background: #fff;
+            border: 2px solid #333;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="game" width="800" height="200"></canvas>
+
+    <script>
+        const canvas = document.getElementById("game");
+        const ctx = canvas.getContext("2d");
+
+        // Dino object
+        const dino = {
+            x: 50,
+            y: 150,
+            width: 40,
+            height: 40,
+            dy: 0,
+            gravity: 0.8,
+            jumpPower: -12,
+            grounded: true
+        };
+
+        // Obstacle object
+        const cactus = {
+            x: 800,
+            y: 160,
+            width: 20,
+            height: 30,
+            speed: 6
+        };
+
+        let score = 0;
+        let gameOver = false;
+
+        // Jump on space key
+        document.addEventListener("keydown", (e) => {
+            if (e.code === "Space" && dino.grounded) {
+                dino.dy = dino.jumpPower;
+                dino.grounded = false;
+            }
+        });
+
+        function update() {
+            if (gameOver) return;
+
+            // Dino physics
+            dino.dy += dino.gravity;
+            dino.y += dino.dy;
+
+            if (dino.y >= 150) {
+                dino.y = 150;
+                dino.dy = 0;
+                dino.grounded = true;
+            }
+
+            // Move cactus
+            cactus.x -= cactus.speed;
+            if (cactus.x + cactus.width < 0) {
+                cactus.x = 800;
+                score++;
+            }
+
+            // Collision detection
+            if (
+                dino.x < cactus.x + cactus.width &&
+                dino.x + dino.width > cactus.x &&
+                dino.y < cactus.y + cactus.height &&
+                dino.y + dino.height > cactus.y
+            ) {
+                gameOver = true;
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Ground line
+            ctx.fillStyle = "#333";
+            ctx.fillRect(0, 190, 800, 2);
+
+            // Dino
+            ctx.fillStyle = "#2ecc71";
+            ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
+
+            // Cactus
+            ctx.fillStyle = "#e74c3c";
+            ctx.fillRect(cactus.x, cactus.y, cactus.width, cactus.height);
+
+            // Score
+            ctx.fillStyle = "#000";
+            ctx.font = "16px Arial";
+            ctx.fillText("Score: " + score, 10, 20);
+
+            if (gameOver) {
+                ctx.font = "24px Arial";
+                ctx.fillText("Game Over", 330, 100);
+                ctx.font = "16px Arial";
+                ctx.fillText("Refresh to Restart", 320, 130);
+            }
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+    </script>
+</body>
+
+</html>
